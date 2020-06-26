@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/ui/widgets/appBar.dart';
 import 'package:todo/ui/widgets/inputTextField.dart';
 import 'package:todo/helpers/validators.dart';
+import 'package:todo/ui/widgets/submitButton.dart';
 
 final _title = 'Sign Up';
 
@@ -109,8 +110,8 @@ class _SignUpState extends State<SignUp> {
               },
             ),
           ),
-          RaisedButton(
-            child: Text('Sign Up'),
+          submitButton(
+            title: 'Sign Up',
             onPressed: () {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
@@ -119,7 +120,7 @@ class _SignUpState extends State<SignUp> {
                     backgroundColor: Colors.blueGrey.shade900));
               }
             },
-          )
+          ),
         ],
       ),
     );

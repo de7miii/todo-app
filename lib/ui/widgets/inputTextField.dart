@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 Widget inputTextField(
     {BuildContext context,
     String inputText,
-    Function validator,
-    Function onSubmitted,
+    Function(String) validator,
+    Function(String) onSubmitted,
     bool autoValidate = false,
     bool autoFocus = false,
     String hintText,
@@ -13,7 +13,7 @@ Widget inputTextField(
     TextInputType textInputType,
     TextCapitalization textCapitalization,
     bool obscureText = false,
-    Function onChanged}) {
+    Function(String) onChanged}) {
   return TextFormField(
     autovalidate: autoValidate,
     autofocus: autoFocus,
