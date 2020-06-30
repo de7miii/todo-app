@@ -1,84 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/ui/widgets/SignUp.dart';
+import 'package:todo/ui/widgets/Login.dart';
 import 'package:todo/ui/widgets/appBar.dart';
-import 'package:todo/ui/widgets/inputTextField.dart';
-import 'package:todo/helpers/validators.dart';
-import 'package:todo/ui/widgets/submitButton.dart';
+import 'package:todo/utils/AuthService.dart';
 
 final _title = 'Login';
 
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: customAppBar(_title),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: SingleChildScrollView(child: Login()),
-      ),
-    );
-  }
-}
-
-class Login extends StatefulWidget {
-  @override
-  _LoginState createState() => _LoginState();
-}
-
-class _LoginState extends State<Login> {
-  final _formKey = GlobalKey<FormState>();
-  var _email, _password = '';
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: inputTextField(
-              context: context,
-              inputText: _email,
-              autoFocus: true,
-              autoValidate: true,
-              labelText: 'Email',
-              hintText: 'Please enter a valid email',
-              textInputType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              textCapitalization: TextCapitalization.none,
-              obscureText: false,
-              validator: (value) => validateEmail(value),
-              onSubmitted: (value) {FocusScope.of(context).nextFocus();}
-            ),
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/bg.png'),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: inputTextField(
-              context: context,
-              inputText: _password,
-              autoFocus: false,
-              autoValidate: false,
-              labelText: 'Password',
-              hintText: 'Please enter your password',
-              textInputType: TextInputType.text,
-              textInputAction: TextInputAction.done,
-              textCapitalization: TextCapitalization.none,
-              obscureText: true,
-              validator: (value) => value.isEmpty? 'Invalid Password. Password cannot be empty' : null,
-              onSubmitted: (value) {FocusScope.of(context).unfocus();}
-            ),
+          color: Colors.blueGrey.shade50),
+      child: Scaffold(
+          appBar: customAppBar(_title),
+          backgroundColor: Colors.transparent,
+          body: Consumer<AuthService>(
+            builder: (context, value, child) {
+              return value.signup? SignUp() : Login();
+            },
           ),
-          submitButton(
-            title: 'Sign In',
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('Sign In Submit Pressed'),
-                    backgroundColor: Colors.blueGrey.shade900));
-              }
-            }
-          ),
-        ],
       ),
     );
   }
