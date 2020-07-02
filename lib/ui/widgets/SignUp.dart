@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/utils/AuthService.dart';
+import 'package:todo/logic/AuthModel.dart';
 import 'inputTextField.dart';
 import 'submitButton.dart';
 import 'package:todo/utils/validators.dart';
@@ -26,9 +26,9 @@ class _SignUpState extends State<SignUp> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                child: inputTextField(
+                child: InputTextField(
                     context: context,
-                    inputText: _email,
+                    onSaved: (value) => _email = value,
                     autoValidate: true,
                     autoFocus: false,
                     hintText: 'Enter a valid email',
@@ -43,9 +43,9 @@ class _SignUpState extends State<SignUp> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                child: inputTextField(
+                child: InputTextField(
                   context: context,
-                  inputText: _name,
+                  onSaved: (value) => _name = value,
                   hintText: 'Enter your name',
                   labelText: 'Name',
                   textInputAction: TextInputAction.next,
@@ -59,9 +59,9 @@ class _SignUpState extends State<SignUp> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                child: inputTextField(
+                child: InputTextField(
                   context: context,
-                  inputText: _password,
+                  onSaved: (value) => _password = value,
                   hintText: 'Please enter a unique password',
                   labelText: 'Password',
                   obscureText: true,
@@ -81,9 +81,9 @@ class _SignUpState extends State<SignUp> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                child: inputTextField(
+                child: InputTextField(
                   context: context,
-                  inputText: _passwordConfirmation,
+                  onSaved: (value) => _passwordConfirmation = value,
                   autoValidate: true,
                   hintText: 'Enter your passwrod again please',
                   labelText: 'Password Confirmation',
@@ -104,9 +104,9 @@ class _SignUpState extends State<SignUp> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 36.0, right: 64.0, top: 16.0),
                       child: FlatButton(
-                        child: Text('Alreade have an account?'),
+                        child: Text('Already have an account?'),
                         onPressed: () {
-                          Provider.of<AuthService>(context, listen: false).setSignupState(false);
+                          Provider.of<AuthModel>(context, listen: false).setSignupState(false);
                         },
                       ),
                     ),
@@ -121,7 +121,7 @@ class _SignUpState extends State<SignUp> {
                           Scaffold.of(context).showSnackBar(SnackBar(
                               content: Text('Sign Up Done'),
                               backgroundColor: Colors.blueGrey.shade900));
-                          Provider.of<AuthService>(context, listen: false).signUp();
+                          Provider.of<AuthModel>(context, listen: false).signUp();
                         }
                       },
                     ),

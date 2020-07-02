@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthService with ChangeNotifier {
-  AuthService();
+class AuthModel with ChangeNotifier {
+  AuthModel();
 
   var _loginStatus;
   var _signup;

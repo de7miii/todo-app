@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/utils/AuthService.dart';
+import 'package:todo/logic/AuthModel.dart';
 import 'inputTextField.dart';
 import 'submitButton.dart';
 import 'package:todo/utils/validators.dart';
@@ -23,9 +23,9 @@ class _LoginState extends State<Login> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                child: inputTextField(
+                child: InputTextField(
                     context: context,
-                    inputText: _email,
+                    onSaved: (value) => _email = value,
                     autoFocus: false,
                     autoValidate: true,
                     labelText: 'Email',
@@ -41,9 +41,9 @@ class _LoginState extends State<Login> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                child: inputTextField(
+                child: InputTextField(
                     context: context,
-                    inputText: _password,
+                    onSaved: (value) => _password = value,
                     autoFocus: false,
                     autoValidate: false,
                     labelText: 'Password',
@@ -67,7 +67,7 @@ class _LoginState extends State<Login> {
                       child: FlatButton(
                         child: Text('Need an account?'),
                         onPressed: () {
-                          Provider.of<AuthService>(context, listen: false).setSignupState(true);
+                          Provider.of<AuthModel>(context, listen: false).setSignupState(true);
                         },
                       ),
                     ),
@@ -79,10 +79,12 @@ class _LoginState extends State<Login> {
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             _formKey.currentState.save();
+                            print(_email);
+                            print(_password);
                             Scaffold.of(context).showSnackBar(SnackBar(
                                 content: Text('Sign In Submit Pressed'),
                                 backgroundColor: Colors.blueGrey.shade900));
-                            Provider.of<AuthService>(context, listen: false).logIn();
+                            Provider.of<AuthModel>(context, listen: false).logIn();
                           }
                         }),
                   ),
