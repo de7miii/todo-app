@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/logic/Item.dart';
 import 'package:todo/logic/Todo.dart';
-import 'package:todo/logic/TodoModel.dart';
-import 'package:todo/ui/widgets/todoListItem.dart';
+import 'package:todo/logic/todo_model.dart';
+import 'package:todo/ui/widgets/todo_list_item.dart';
 
 class TodoList extends StatefulWidget {
   @override
@@ -14,8 +14,9 @@ class TodoList extends StatefulWidget {
 class _TodoListState extends State<TodoList> {
   TodoModel todoModel;
   List<Todo> todoList;
-  List<Item> itemList;
   GlobalKey<State> _globalKey = GlobalKey();
+  GlobalKey<FormState> _formKey = GlobalKey();
+  String _content, _createdAt = '';
 
   @override
   void didChangeDependencies() {
@@ -24,7 +25,6 @@ class _TodoListState extends State<TodoList> {
     todoModel = Provider.of<TodoModel>(context);
     assert(todoModel != null);
     todoList = todoModel.todos;
-    itemList = todoModel.items;
   }
 
   @override
@@ -33,7 +33,8 @@ class _TodoListState extends State<TodoList> {
         backgroundColor: Colors.transparent,
         body: ListView.builder(
           itemBuilder: (_, index) {
-            return todoListItem(_globalKey, todoList, itemList, index, context);
+            return todoListItem(_globalKey, todoList, index, context, todoModel,
+                _formKey, _content, _createdAt);
           },
           itemCount: todoList.length,
           scrollDirection: Axis.horizontal,

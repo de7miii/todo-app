@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/logic/AuthModel.dart';
-import 'package:todo/ui/widgets/SignUp.dart';
-import 'package:todo/ui/widgets/Login.dart';
-import 'package:todo/ui/widgets/appBar.dart';
+import 'package:todo/logic/auth_model.dart';
+import 'package:todo/ui/widgets/signup.dart';
+import 'package:todo/ui/widgets/login.dart';
+import 'package:todo/ui/widgets/app_bar.dart';
 
 final _title = 'Login';
 

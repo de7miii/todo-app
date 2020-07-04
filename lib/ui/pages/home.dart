@@ -1,16 +1,11 @@
 // Packages imports.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/logic/AuthModel.dart';
-import 'package:todo/logic/ItemModel.dart';
-import 'package:todo/logic/TodoModel.dart';
-import 'package:todo/ui/widgets/EmptyTodoList.dart';
-import 'package:todo/ui/widgets/TodoList.dart';
-
-// Widgets imports.
-import 'package:todo/ui/widgets/appBar.dart';
-
-// Pages imports.
+import 'package:todo/logic/auth_model.dart';
+import 'package:todo/logic/item_model.dart';
+import 'package:todo/logic/todo_model.dart';
+import 'package:todo/ui/widgets/empty_todo_list.dart';
+import 'package:todo/ui/widgets/app_bar.dart';
 import 'login.dart';
 
 final _title = 'To-Do-Da';

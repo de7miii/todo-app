@@ -79,6 +79,10 @@ class ItemModel {
     _items.add(item);
   }
 
+  addItems(List<Item> items){
+    _items.addAll(items);
+  }
+
   remove(int id){
     var item = getItemById(id);
     if(item != null && _items.contains(item)) {

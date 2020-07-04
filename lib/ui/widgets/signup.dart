@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/logic/AuthModel.dart';
-import 'inputTextField.dart';
-import 'submitButton.dart';
+import 'package:todo/logic/auth_model.dart';
+import 'input_text_field.dart';
+import 'submit_button.dart';
 import 'package:todo/utils/validators.dart';
 
 
@@ -98,35 +98,39 @@ class _SignUpState extends State<SignUp> {
                   },
                 ),
               ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 36.0, right: 64.0, top: 16.0),
-                      child: FlatButton(
-                        child: Text('Already have an account?'),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 32.0, right: 52.0),
+                        child: FlatButton(
+                          child: Text('Already have an account?'),
+                          onPressed: () {
+                            Provider.of<AuthModel>(context, listen: false).setSignupState(false);
+                          },
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 24.0),
+                      child: CustomButton(
+                        color: Colors.blueGrey.shade200,
+                        child: Text('Sign Up'),
                         onPressed: () {
-                          Provider.of<AuthModel>(context, listen: false).setSignupState(false);
+                          if (_formKey.currentState.validate()) {
+                            _formKey.currentState.save();
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                                content: Text('Sign Up Done'),
+                                backgroundColor: Colors.blueGrey.shade900));
+                            Provider.of<AuthModel>(context, listen: false).signUp();
+                          }
                         },
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0, top: 16.0),
-                    child: submitButton(
-                      title: 'Sign Up',
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text('Sign Up Done'),
-                              backgroundColor: Colors.blueGrey.shade900));
-                          Provider.of<AuthModel>(context, listen: false).signUp();
-                        }
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

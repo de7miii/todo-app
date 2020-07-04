@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/logic/Todo.dart';
 
 import 'Item.dart';
-import 'ItemModel.dart';
+import 'item_model.dart';
 
 class TodoModel with ChangeNotifier {
   TodoModel();

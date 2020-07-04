@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Todo {
   int id;
   String title;
@@ -19,9 +21,18 @@ class Todo {
     );
   }
 
+  String toJson(Todo todo){
+    return json.encode(todo);
+  }
+
   @override
   int get hashCode => id;
 
   @override
   bool operator ==(Object other) => other is Todo && other.id == id;
+
+  @override
+  String toString() {
+    return "{ \nid: \"${this.id}\", \ntitle: \"${this.title}\", \ncreated_by: \"${this.createdBy}\", \ncreated_at: \"${this.createdAt}\", \nupdated_at: \"${this.updatedAt}\" }";
+  }
 }
