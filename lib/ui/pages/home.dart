@@ -47,7 +47,17 @@ class HomePage extends StatelessWidget {
           ),
         ),
         child: Scaffold(
-          appBar: customAppBar(_title),
+          appBar: customAppBar(
+            title: _title,
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Log out'),
+                onPressed: () {
+                  Provider.of<AuthModel>(context, listen: false).logOut();
+                },
+              ),
+            ],
+          ),
           backgroundColor: Colors.transparent,
           body: EmptyTodoList(),
         ),

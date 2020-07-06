@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:todo/logic/Item.dart';
 import 'package:todo/logic/Todo.dart';
 import 'package:todo/logic/todo_model.dart';
@@ -7,7 +8,7 @@ import 'input_text_field.dart';
 import 'submit_button.dart';
 
 createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
-    String title, String createdBy, String createdAt) {
+    String title, String createdBy, String createdAt, Database db) {
   showModalBottomSheet(
     elevation: 8.0,
     backgroundColor: Colors.transparent,
@@ -58,7 +59,7 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
                         autoFocus: false,
                         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                         validator: (value) =>
-                        value.isEmpty ? 'Invalid Todo Title' : null,
+                            value.isEmpty ? 'Invalid Todo Title' : null,
                         textCapitalization: TextCapitalization.none),
                   ),
                   SizedBox(
@@ -78,7 +79,7 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
                         onSubmitted: (value) =>
                             FocusScope.of(context).unfocus(),
                         validator: (value) =>
-                        value.isEmpty ? 'Invalid Name' : null,
+                            value.isEmpty ? 'Invalid Name' : null,
                         textCapitalization: TextCapitalization.none),
                   ),
                   SizedBox(
@@ -101,19 +102,15 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
                             .replaceAll('-', '/');
                         if (formKey.currentState.validate()) {
                           formKey.currentState.save();
+                          Provider.of<TodoModel>(context, listen: false)
+                              .createTodo(
+                                  Todo(
+                                      id: Provider.of<TodoModel>(context, listen: false).todosCount + 1,
+                                      title: title,
+                                      createdBy: createdBy,
+                                      createdAt: createdAt),
+                                  db: db);
                           Navigator.of(context).pop();
-                          Provider.of<TodoModel>(context, listen: false)
-                              .createTodo(Todo(
-                              id: 1,
-                              title: title,
-                              createdBy: createdBy,
-                              createdAt: createdAt));
-                          Provider.of<TodoModel>(context, listen: false)
-                              .createTodo(Todo(
-                              id: 2,
-                              title: title,
-                              createdBy: createdBy,
-                              createdAt: createdAt));
                         }
                       },
                     ),
@@ -128,8 +125,13 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
   );
 }
 
-createItemBottomSheet(BuildContext context, int todoId, GlobalKey<FormState> formKey,
-    String content, String createdAt) {
+createItemBottomSheet(
+    BuildContext context,
+    int todoId,
+    GlobalKey<FormState> formKey,
+    String content,
+    String createdAt,
+    Database db) {
   showModalBottomSheet(
     elevation: 8.0,
     backgroundColor: Colors.transparent,
@@ -180,7 +182,7 @@ createItemBottomSheet(BuildContext context, int todoId, GlobalKey<FormState> for
                         autoFocus: false,
                         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                         validator: (value) =>
-                        value.isEmpty ? 'Invalid Todo Item' : null,
+                            value.isEmpty ? 'Invalid Todo Item' : null,
                         textCapitalization: TextCapitalization.none),
                   ),
                   SizedBox(
@@ -204,9 +206,21 @@ createItemBottomSheet(BuildContext context, int todoId, GlobalKey<FormState> for
                         if (formKey.currentState.validate()) {
                           formKey.currentState.save();
                           Navigator.of(context).pop();
-                          var lastId = Provider.of<TodoModel>(context, listen: false).itemsModel.items.length;
+                          var lastId =
+                              Provider.of<TodoModel>(context, listen: false)
+                                  .itemsModel
+                                  .items
+                                  .length;
                           Provider.of<TodoModel>(context, listen: false)
-                              .addItem(Item(id: lastId+1, todoId: todoId, content: content, status: false));
+                              .addItem(
+                            Item(
+                                id: lastId + 1,
+                                todoId: todoId,
+                                content: content,
+                                createdAt: createdAt,
+                                status: false),
+                            db: db,
+                          );
                         }
                       },
                     ),

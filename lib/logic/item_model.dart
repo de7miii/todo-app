@@ -1,3 +1,5 @@
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:todo/logic/Item.dart';
 import 'dart:core';
 
@@ -6,87 +8,61 @@ import 'package:todo/logic/Todo.dart';
 class ItemModel {
   ItemModel();
 
-  List<Item> _items = [
-    Item(
-        id: 1,
-        todoId: 1,
-        content: 'Scarface',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 50)).toIso8601String(),
-        status: false),
-    Item(
-        id: 2,
-        todoId: 1,
-        content: 'Goodfellas',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 20)).toIso8601String(),
-        status: false),
-    Item(
-        id: 3,
-        todoId: 1,
-        content: 'The Godfather I',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 5)).toIso8601String(),
-        status: false),
-    Item(
-        id: 4,
-        todoId: 2,
-        content: 'The Irishman',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 7)).toIso8601String(),
-        status: false),
-    Item(
-        id: 5,
-        todoId: 2,
-        content: 'Gangs of New York',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 35)).toIso8601String(),
-        status: false),
-    Item(
-        id: 6,
-        todoId: 2,
-        content: 'Wolf of Wall Street',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
-        status: false),
-    Item(
-        id: 7,
-        todoId: 2,
-        content: 'Dunkirk',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
-        status: false),
-    Item(
-        id: 8,
-        todoId: 2,
-        content: 'Tenet',
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
-        status: false),
-  ];
+  List<Item> _items = [];
 
   List<Item> get items => _items;
 
-  List<Item> getTodoItems(Todo todo) =>
-      _items.where((element) => element.todoId == todo.id).toList();
+  set items(List<Item> newItems) {
+    assert(newItems != null);
+    _items = newItems;
+  }
 
-  Item getItemById(int id) => _items.where((element) => element.id == id).elementAt(0);
+  List<Item> getTodoItems(Todo todo) {
+    fetchItemsFromDb();
+    return items.where((element) => element.todoId == todo.id).toList();
+  }
 
-  // TODO: Fetch Items from the server.
+  Item getItemById(int id) {
+    fetchItemsFromDb();
+    return items.where((element) => element.id == id).elementAt(0);
+  }
 
-  add(Item item) {
+  Future<List<Item>> fetchItemsFromDb({Database db}) async {
+    if (db == null) {
+      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'));
+    }
+    List<Map<String, dynamic>> dbItems = await db.query('items');
+
+    items = List.generate(dbItems.length, (index) {
+      return Item(
+          id: dbItems[index]['id'],
+          todoId: dbItems[index]['todo_id'],
+          content: dbItems[index]['content'],
+          createdAt: dbItems[index]['created_at'],
+          status: dbItems[index]['status'] == 0 ? false : true,
+          updatedAt: dbItems[index]['updated_at']);
+    });
+    return Future.value(items);
+  }
+
+  add(Item item, Database db) async {
     assert(item != null);
+    if (db == null) {
+      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'), readOnly: false);
+    }
+    await db.insert('items', item.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
     _items.add(item);
   }
 
-  addItems(List<Item> items){
-    _items.addAll(items);
-  }
-
-  remove(int id){
+  remove(int id, Database db) async {
     var item = getItemById(id);
-    if(item != null && _items.contains(item)) {
+    if (item != null && _items.contains(item)) {
+      if (db == null) {
+        db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'), readOnly: false);
+      }
       _items.remove(item);
+      await db.delete('items', where: 'id = ?', whereArgs: [id]);
     }
   }
 }

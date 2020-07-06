@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:todo/logic/auth_model.dart';
 import 'package:todo/logic/todo_model.dart';
 import 'package:todo/ui/widgets/submit_button.dart';
 import 'package:todo/ui/widgets/todo_list.dart';
@@ -21,8 +23,10 @@ class _EmptyTodoListState extends State<EmptyTodoList> {
   @override
   Widget build(BuildContext context) {
     return Consumer<TodoModel>(
-      builder: (context, value, child) =>
-          value.todosCount == 0 ? child : TodoList(),
+      builder: (context, value, child) {
+        value.fetchTodosFromDB();
+        return value.todosCount == 0 ? child : TodoList();
+      },
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
@@ -44,7 +48,8 @@ class _EmptyTodoListState extends State<EmptyTodoList> {
                   size: 36.0,
                 ),
                 onPressed: () {
-                  createTodoBottomSheet(context, _formKey, _title, _createdBy, _createdAt);
+                  Database db = Provider.of<AuthModel>(context, listen: false).dbInstance;
+                  createTodoBottomSheet(context, _formKey, _title, _createdBy, _createdAt, db);
                 },
               ),
             ],

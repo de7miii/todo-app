@@ -17,7 +17,7 @@ class LoginPage extends StatelessWidget {
           ),
           color: Colors.blueGrey.shade50),
       child: Scaffold(
-          appBar: customAppBar(_title),
+          appBar: customAppBar(title: _title),
           backgroundColor: Colors.transparent,
           body: Consumer<AuthModel>(
             builder: (context, value, child) {

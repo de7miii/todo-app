@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:todo/logic/Item.dart';
 import 'package:todo/logic/todo_model.dart';
 
@@ -9,7 +10,8 @@ class ItemListItem extends StatefulWidget {
   final List<Item> items;
   final int index;
   final TodoModel todoModel;
-  ItemListItem({this.items, this.index, this.todoModel});
+  Database db;
+  ItemListItem(this.db, {this.items, this.index, this.todoModel});
 }
 
 class _ItemListItemState extends State<ItemListItem> {
@@ -40,7 +42,7 @@ class _ItemListItemState extends State<ItemListItem> {
             onDismissed: (direction) {
               var currentItem = widget.items[widget.index];
               setState(() {
-                widget.todoModel.deleteItem(currentItem.id);
+                widget.todoModel.deleteItem(currentItem.id, db: widget.db);
               });
               Scaffold.of(context).showSnackBar(SnackBar(
                 content: Text("Deleted ${currentItem.content} from List"),
@@ -50,7 +52,7 @@ class _ItemListItemState extends State<ItemListItem> {
             },
             child: ListTile(
               leading: Checkbox(
-                value: item.status,
+                value: isDone,
                 onChanged: (val) => {
                   setState(() {
                     item.status = val;
@@ -76,7 +78,7 @@ class _ItemListItemState extends State<ItemListItem> {
                   onTap: () {
                     var currentItem = widget.items[widget.index];
                     setState(() {
-                      widget.todoModel.deleteItem(currentItem.id);
+                      widget.todoModel.deleteItem(currentItem.id, db: widget.db);
                     });
                   },
                   child: Icon(Icons.clear)),

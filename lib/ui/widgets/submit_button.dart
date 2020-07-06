@@ -7,13 +7,14 @@ class CustomButton extends StatelessWidget {
   ShapeBorder shape;
   Widget child;
   Color color;
+  double minWidth;
 
-  CustomButton({@required this.onPressed, this.shape = const StadiumBorder(), this.child, this.color});
+  CustomButton({@required this.onPressed, this.shape = const StadiumBorder(), this.child, this.color, this.minWidth = 110.0});
 
   @override
   Widget build(BuildContext context) {
     return ButtonTheme(
-      minWidth: 110.0,
+      minWidth: minWidth,
       height: 45.0,
       child: RaisedButton(
         onPressed: onPressed,
