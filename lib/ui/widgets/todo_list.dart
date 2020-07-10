@@ -30,6 +30,7 @@ class _TodoListState extends State<TodoList> {
     todoModel = Provider.of<TodoModel>(context);
     assert(todoModel != null);
     todoList = todoModel.todos;
+    todoModel.fetchItemsFromDb();
     _db = Provider.of<AuthModel>(context, listen: false).dbInstance;
   }
 
@@ -37,26 +38,29 @@ class _TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: ListView.builder(
-        itemBuilder: (_, index) {
-          return todoListItem(_globalKey, todoList, index, context, todoModel,
-              _formKey, _content, _createdAt, _db);
+      body: Consumer<TodoModel>(
+        builder: (context, value, child) {
+          return ListView.builder(
+            itemBuilder: (_, index) {
+              return todoListItem(_globalKey, todoList, index, context, todoModel,
+                  _formKey, _content, _createdAt, _db);
+            },
+            itemCount: value.todosCount,
+            scrollDirection: Axis.vertical,
+          );
         },
-        itemCount: todoModel.todosCount,
-        scrollDirection: Axis.vertical,
       ),
-      floatingActionButton: CustomButton(
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 45.0,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: CustomButton(
+          child: Text('New Todo', style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.teal.shade600),),
+          onPressed: () {
+            createTodoBottomSheet(
+                context, _formKey, _title, _createdBy, _createdAt);
+          },
+          color: Colors.blueGrey.shade200,
+          minWidth: 80.0,
         ),
-        onPressed: () {
-          createTodoBottomSheet(
-              context, _formKey, _title, _createdBy, _createdAt, _db);
-        },
-        color: Colors.blueGrey,
-        minWidth: 80.0,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

@@ -10,7 +10,7 @@ class ItemListItem extends StatefulWidget {
   final List<Item> items;
   final int index;
   final TodoModel todoModel;
-  Database db;
+  final Database db;
   ItemListItem(this.db, {this.items, this.index, this.todoModel});
 }
 
@@ -34,7 +34,7 @@ class _ItemListItemState extends State<ItemListItem> {
             });
           },
           child: Dismissible(
-            key: Key(item.content),
+            key: Key(item.id.toString()),
             background: Container(
               color: Colors.red.shade700,
             ),
@@ -42,7 +42,7 @@ class _ItemListItemState extends State<ItemListItem> {
             onDismissed: (direction) {
               var currentItem = widget.items[widget.index];
               setState(() {
-                widget.todoModel.deleteItem(currentItem.id, db: widget.db);
+                widget.todoModel.deleteItem(currentItem.id);
               });
               Scaffold.of(context).showSnackBar(SnackBar(
                 content: Text("Deleted ${currentItem.content} from List"),

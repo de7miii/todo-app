@@ -82,8 +82,6 @@ class _LoginState extends State<Login> {
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
                               _formKey.currentState.save();
-                              print(_email);
-                              print(_password);
                               Scaffold.of(context).showSnackBar(SnackBar(
                                   content: Text('Sign In Submit Pressed'),
                                   backgroundColor: Colors.blueGrey.shade900));

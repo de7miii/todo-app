@@ -20,11 +20,17 @@ class _EmptyTodoListState extends State<EmptyTodoList> {
   final _formKey = GlobalKey<FormState>();
   var _title, _createdBy, _createdAt = '';
 
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<TodoModel>(context, listen: false).fetchTodosFromDB();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<TodoModel>(
       builder: (context, value, child) {
-        value.fetchTodosFromDB();
         return value.todosCount == 0 ? child : TodoList();
       },
       child: Scaffold(
@@ -42,14 +48,9 @@ class _EmptyTodoListState extends State<EmptyTodoList> {
               CustomButton(
                 shape: StadiumBorder(),
                 color: Colors.blueGrey.shade200,
-                child: Icon(
-                  Icons.add,
-                  color: Colors.teal.shade600,
-                  size: 36.0,
-                ),
+                child: Text('New Todo', style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.teal.shade600),),
                 onPressed: () {
-                  Database db = Provider.of<AuthModel>(context, listen: false).dbInstance;
-                  createTodoBottomSheet(context, _formKey, _title, _createdBy, _createdAt, db);
+                  createTodoBottomSheet(context, _formKey, _title, _createdBy, _createdAt);
                 },
               ),
             ],

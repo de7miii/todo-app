@@ -12,6 +12,17 @@ class ItemModel {
 
   List<Item> get items => _items;
 
+  int get itemsCount => _items.length;
+
+  int _id = 1;
+
+  int get id => _id;
+
+  set id(int newId) {
+    assert(newId != null);
+    _id = newId;
+  }
+
   set items(List<Item> newItems) {
     assert(newItems != null);
     _items = newItems;
@@ -20,6 +31,11 @@ class ItemModel {
   List<Item> getTodoItems(Todo todo) {
     fetchItemsFromDb();
     return items.where((element) => element.todoId == todo.id).toList();
+  }
+
+  void deleteTodoItems(Todo todo){
+    fetchItemsFromDb();
+    items.removeWhere((element) => element.todoId == todo.id);
   }
 
   Item getItemById(int id) {
@@ -45,24 +61,43 @@ class ItemModel {
     return Future.value(items);
   }
 
-  add(Item item, Database db) async {
+  add(Item item, Database db) {
     assert(item != null);
-    if (db == null) {
-      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'), readOnly: false);
-    }
-    await db.insert('items', item.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    item.id = id;
     _items.add(item);
+    insert(item.toMap(), db);
+    id = id + 1;
   }
 
-  remove(int id, Database db) async {
+  remove(int id, Database db) {
     var item = getItemById(id);
     if (item != null && _items.contains(item)) {
-      if (db == null) {
-        db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'), readOnly: false);
-      }
       _items.remove(item);
-      await db.delete('items', where: 'id = ?', whereArgs: [id]);
+      delete(item.id, db);
     }
+  }
+
+  insert(Map<String, dynamic> item, Database db) async {
+    if (db == null) {
+      try {
+        db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'),
+            singleInstance: true);
+      } catch (e) {
+        print(e);
+      }
+    }
+    return await db.insert('items', item);
+  }
+
+  delete(int itemId, Database db) async {
+    if (db == null) {
+      try {
+        db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'),
+            singleInstance: true);
+      } catch (e) {
+        print(e);
+      }
+    }
+    return await db.delete('items', where: 'id = ?', whereArgs: [itemId]);
   }
 }

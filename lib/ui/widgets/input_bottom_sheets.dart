@@ -8,7 +8,8 @@ import 'input_text_field.dart';
 import 'submit_button.dart';
 
 createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
-    String title, String createdBy, String createdAt, Database db) {
+    String title, String createdBy, String createdAt,
+    {Database db}) {
   showModalBottomSheet(
     elevation: 8.0,
     backgroundColor: Colors.transparent,
@@ -21,6 +22,7 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
         initialChildSize: 0.8,
         minChildSize: 0.6,
         maxChildSize: 1.0,
+        expand: true,
         builder: (context, scrollController) => Container(
           decoration: BoxDecoration(
             color: Colors.blueGrey.shade300,
@@ -52,7 +54,7 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
                         context: context,
                         onSaved: (value) => title = value,
                         labelText: 'Title',
-                        hintText: 'Title',
+                        hintText: 'Todo\'s Title',
                         textInputAction: TextInputAction.next,
                         textInputType: TextInputType.text,
                         autoValidate: false,
@@ -71,7 +73,7 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
                         context: context,
                         onSaved: (value) => createdBy = value,
                         labelText: 'Name',
-                        hintText: 'Name',
+                        hintText: 'Author\'s Name',
                         textInputAction: TextInputAction.done,
                         textInputType: TextInputType.text,
                         autoValidate: false,
@@ -103,13 +105,10 @@ createTodoBottomSheet(BuildContext context, GlobalKey<FormState> formKey,
                         if (formKey.currentState.validate()) {
                           formKey.currentState.save();
                           Provider.of<TodoModel>(context, listen: false)
-                              .createTodo(
-                                  Todo(
-                                      id: Provider.of<TodoModel>(context, listen: false).todosCount + 1,
-                                      title: title,
-                                      createdBy: createdBy,
-                                      createdAt: createdAt),
-                                  db: db);
+                              .createTodo(Todo(
+                                  title: title,
+                                  createdBy: createdBy,
+                                  createdAt: createdAt));
                           Navigator.of(context).pop();
                         }
                       },
@@ -162,7 +161,7 @@ createItemBottomSheet(
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
-                      'Create a new todo',
+                      'Create a new todo item',
                       style: Theme.of(context).textTheme.headline4,
                     ),
                   ),
@@ -175,7 +174,7 @@ createItemBottomSheet(
                         context: context,
                         onSaved: (value) => content = value,
                         labelText: 'Content',
-                        hintText: 'Content',
+                        hintText: 'Item Content',
                         textInputAction: TextInputAction.next,
                         textInputType: TextInputType.text,
                         autoValidate: false,
@@ -205,22 +204,15 @@ createItemBottomSheet(
                             .replaceAll('-', '/');
                         if (formKey.currentState.validate()) {
                           formKey.currentState.save();
-                          Navigator.of(context).pop();
-                          var lastId =
-                              Provider.of<TodoModel>(context, listen: false)
-                                  .itemsModel
-                                  .items
-                                  .length;
                           Provider.of<TodoModel>(context, listen: false)
                               .addItem(
                             Item(
-                                id: lastId + 1,
                                 todoId: todoId,
                                 content: content,
                                 createdAt: createdAt,
                                 status: false),
-                            db: db,
                           );
+                          Navigator.of(context).pop();
                         }
                       },
                     ),

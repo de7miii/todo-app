@@ -32,4 +32,9 @@ class Item {
 
   @override
   bool operator ==(Object other) => other is Item && other.id == id;
+
+  @override
+  String toString() {
+    return "{ \nid: \"${this.id}\", \ntodo_id: \"${this.todoId}\", \ncontent: \"${this.content}\", \nstatus: \"${this.status}\", \ncreated_at: \"${this.createdAt}\", \nupdated_at: \"${this.updatedAt}\" }";
+  }
 }

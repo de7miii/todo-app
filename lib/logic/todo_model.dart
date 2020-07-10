@@ -17,6 +17,15 @@ class TodoModel with ChangeNotifier {
 
   List<Todo> get todos => _todos;
 
+  int _id = 1;
+
+  int get id => _id;
+
+  set id(int newId){
+    assert(newId != null);
+    _id = newId;
+  }
+
   set todos(List<Todo> todos) {
     assert(todos != null);
     _todos = todos;
@@ -33,18 +42,24 @@ class TodoModel with ChangeNotifier {
 
   int get todosCount => todos.length;
 
+  int get itemsCount => itemsModel.itemsCount;
 
-  Todo getTodoById(int todoId) =>
-      todos.where((element) => element.id == todoId).elementAt(0);
+  Todo getTodoById(int todoId) {
+    return todos.where((element) => element.id == todoId).elementAt(0);
+  }
 
   List<Item> getTodoItems(int todoId) {
-    itemsModel.fetchItemsFromDb();
     return itemsModel.getTodoItems(getTodoById(todoId));
+  }
+
+  int getTodoItemsCount(int todoId){
+    return getTodoItems(todoId).length;
   }
 
   Future fetchTodosFromDB({Database db}) async {
     if (db == null) {
-      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'));
+      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'),
+          singleInstance: true);
     }
     List<Map<String, dynamic>> dbTodos = await db.query('todos');
 
@@ -59,39 +74,72 @@ class TodoModel with ChangeNotifier {
     return Future.value(todos);
   }
 
+  Future fetchItemsFromDb({Database db}) async {
+    await itemsModel.fetchItemsFromDb();
+    notifyListeners();
+    return Future.value(itemsModel.items);
+  }
+
   void createTodo(Todo todo, {Database db}) async {
     assert(todo != null);
+    todo.id = id;
     _todos.add(todo);
+    id++;
     notifyListeners();
     if (db == null) {
-      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'));
+      try {
+        db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'),
+            singleInstance: true);
+        await db.insert('todos', todo.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      } catch (e) {
+        print(e);
+      }
     }
-    await db.insert('todos', todo.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
     notifyListeners();
   }
 
   void deleteTodo(int todoId, {Database db}) async {
     var todo = getTodoById(todoId);
-    if(db == null) {
-      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'));
-    }
-    if (todo != null && _todos.contains(todo)) {
+    if (todo != null && todos.contains(todo)) {
+      itemsModel.deleteTodoItems(todo);
       _todos.remove(todo);
-      await db.delete('todos', where: 'id = ?', whereArgs: [todoId]);
+      notifyListeners();
+      if (db == null) {
+        try {
+          db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'),
+              singleInstance: true);
+          await db.delete('todos', where: 'id = ?', whereArgs: [todoId]);
+        } catch (e) {
+          print(e);
+        }
+      }
       notifyListeners();
     }
   }
 
-  void addItem(Item item, {Database db}) {
+  void addItem(Item item, {Database db}) async {
     assert(item != null);
     assert(itemsModel != null);
+//    if (db == null) {
+//      try{
+//        db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'),
+//            singleInstance: true);
+//        print('------');
+//      }catch(e){
+//        print(e);
+//      }
+//    }
     itemsModel.add(item, db);
     notifyListeners();
   }
 
-  void deleteItem(int id, {Database db}) {
+  void deleteItem(int id, {Database db}) async {
     assert(itemsModel != null);
+//    if (db == null) {
+//      db = await openDatabase(join(await getDatabasesPath(), 'to_do_da.db'),
+//          singleInstance: true);
+//    }
     itemsModel.remove(id, db);
     notifyListeners();
   }
